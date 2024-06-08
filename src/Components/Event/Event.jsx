@@ -12,7 +12,6 @@ import styles from './Event.module.css';
 
 export default function Event() {
 	const [events, setEvents] = useState([]);
-	console.log(events[0]);
 
 	useEffect(() => {
 		const socket = new WebSocket('wss://test.dev-relabs.ru/event');
