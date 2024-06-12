@@ -7,6 +7,11 @@ export default function Magazine() {
 		<div className='wrapper'>
 			<MagazineCard></MagazineCard>
 			<MagazineCard></MagazineCard>
+			<MagazineCard></MagazineCard>
+			<MagazineCard></MagazineCard>
+			<MagazineCard></MagazineCard>
+			<MagazineCard></MagazineCard>
+			<MagazineCard></MagazineCard>
 		</div>
 	);
 }

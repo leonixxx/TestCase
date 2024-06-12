@@ -16,15 +16,19 @@ import styles from './ListItem.module.css';
 export default function ListItem() {
 	const [offSet, setoffSet] = useState(0);
 	const { data, error, isLoading } = useGetBaseByNameQuery(offSet);
-	const [dataF, setDataF] = useState(data);
+	const [dataListOnClient, setDataListOnClient] = useState(data);
 
 	useEffect(() => {}, [offSet]);
 	useEffect(() => {
-		setDataF(data);
+		setDataListOnClient(data);
 	}, [data]);
 
 	const handleDelete = id => {
-		setDataF({ ...dataF, items: dataF.items.filter(item => item.id !== id) });
+		console.log(dataListOnClient);
+		setDataListOnClient({
+			...dataListOnClient,
+			items: dataListOnClient.items.filter(item => item.id !== id),
+		});
 	};
 	const handlePagination = page => setoffSet(page * 5 - 5);
 
@@ -36,7 +40,7 @@ export default function ListItem() {
 					<>Oh no, there was an error</>
 				) : isLoading ? (
 					<>Loading...</>
-				) : dataF ? (
+				) : dataListOnClient ? (
 					<>
 						<TableContainer component={Paper}>
 							<Table sx={{ minWidth: 650 }} aria-label='simple table'>
@@ -50,7 +54,7 @@ export default function ListItem() {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{dataF.items.map(row => (
+									{dataListOnClient.items.map(row => (
 										<TableRow
 											key={row.id}
 											sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

@@ -6,18 +6,21 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import React, { useEffect, useState } from 'react';
-import WebSocketStr from '../../Utils/WebSoketStr';
 import getTime from '../../Utils/getTime';
 import styles from './Event.module.css';
 
 export default function Event() {
 	const [events, setEvents] = useState([]);
-
 	useEffect(() => {
 		const socket = new WebSocket('wss://test.dev-relabs.ru/event');
 
 		socket.onmessage = event => {
-			setEvents(prevEvents => [...prevEvents, event.data]);
+			try {
+				const data = JSON.parse(event.data);
+				setEvents(prevEvents => [...prevEvents, data]);
+			} catch (error) {
+				console.error('Ошибка при анализе данных веб-сокета:', error);
+			}
 		};
 		return () => {
 			socket.close();
@@ -36,15 +39,15 @@ export default function Event() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{WebSocketStr(events).map(row => (
+						{events.map(row => (
 							<TableRow
-								key={row.date}
+								key={row.ctime}
 								sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
 							>
 								<TableCell component='th' scope='row'>
-									{getTime(row.date)}
+									{getTime(parseInt(row.ctime))}
 								</TableCell>
-								<TableCell align='left'>{row.action}</TableCell>
+								<TableCell align='left'>{row.event}</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

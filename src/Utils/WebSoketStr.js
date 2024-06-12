@@ -1,5 +1,3 @@
-// {"ctime":1717852614,"event":"rCylyKXdtzkgbfU"}
-
 export default function WebSocketStr(arr) {
 	let result = [];
 	arr.map(item => {

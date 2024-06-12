@@ -1,21 +1,26 @@
 import React, { useContext, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Header from '../Components/Header/Header';
 import { LoginContext } from '../context/LoginContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 export default function Layout() {
 	const navigate = useNavigate();
-	const { value } = useContext(LoginContext);
-	const location = useLocation();
+	const value = useContext(LoginContext);
+	const [storeValue] = useLocalStorage('isLogin');
+
 	useEffect(() => {
-		if (!value) {
+		if (storeValue) {
+			value.setValue();
+		}
+		if (!value.value) {
 			navigate('/login');
 		}
-	}, []);
+	});
 
 	return (
 		<div>
-			<Header path={location.pathname} />
+			<Header />
 			<main>
 				<Outlet />
 			</main>

@@ -11,6 +11,7 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginContext } from '../../context/LoginContext';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { validationEmail, validationPassword } from '../../Utils/validation';
 import './SIgnIn.css';
 
@@ -19,6 +20,7 @@ let email = true;
 let pass = true;
 
 export default function SignIn() {
+	const [, setStoreValue] = useLocalStorage('isLogin');
 	const navigate = useNavigate();
 	const value = useContext(LoginContext);
 	const [emailValid, setEmailValid] = useState(email);
@@ -26,32 +28,44 @@ export default function SignIn() {
 	const [loading, setLoading] = useState(false);
 	const [loader, setLoader] = useState('');
 	const [disabl, setDisabl] = useState(false);
+	const [passwordErrorMessage, setPasswordErrorMessage] = useState();
+	const [emailErrorMessage, setEmailErrorMessage] = useState();
 
 	const handleSubmit = event => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
 		let dataEmail = data.get('email');
 		let dataPass = data.get('password');
-		if (!validationEmail(dataEmail)) {
+		if (!validationEmail(dataEmail).correctValue) {
 			setEmailValid(false);
+			setEmailErrorMessage(validationEmail(dataEmail).message);
 		} else {
 			setEmailValid(true);
 		}
-		if (!validationPassword(dataPass)) {
+		if (!validationPassword(dataPass).correctValue) {
 			setPassValid(false);
+			setPasswordErrorMessage(validationPassword(dataPass).message);
 		} else {
 			setPassValid(true);
 		}
-		if (validationPassword(dataPass) && validationEmail(dataEmail)) {
+		if (
+			validationPassword(dataPass).correctValue &&
+			validationEmail(dataEmail).correctValue
+		) {
+			setStoreValue('true');
 			setEmailValid(true);
 			setPassValid(true);
 			setLoading(true);
 			setLoader();
 			setDisabl(true);
-			setTimeout(() => {
-				value.setValue();
-				navigate('/');
-			}, 2000);
+			try {
+				setTimeout(() => {
+					value.setValue();
+					navigate('/');
+				}, 2000);
+			} catch (error) {
+				console.log('Ошибка перехода на главную страницу', error);
+			}
 		}
 	};
 
@@ -102,7 +116,7 @@ export default function SignIn() {
 						{emailValid ? (
 							<></>
 						) : (
-							<span style={{ color: 'red' }}>Email введён некорректно</span>
+							<span style={{ color: 'red' }}>{emailErrorMessage}</span>
 						)}
 						<TextField
 							margin='normal'
@@ -118,7 +132,7 @@ export default function SignIn() {
 						{passValid ? (
 							<></>
 						) : (
-							<span style={{ color: 'red' }}>Пароль введён некорректно</span>
+							<span style={{ color: 'red' }}>{passwordErrorMessage}</span>
 						)}
 						<Button
 							type='submit'
